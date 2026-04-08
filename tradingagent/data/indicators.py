@@ -359,7 +359,10 @@ def compute_all_indicators(data: dict) -> dict:
         # OBV
         obv = calc_obv(df_short)
         results["obv_current"] = int(obv.iloc[-1]) if not pd.isna(obv.iloc[-1]) else None
-        results["obv_change_5d"] = int(obv.iloc[-1] - obv.iloc[-5]) if len(obv) >= 5 else None
+        if len(obv) >= 5 and not pd.isna(obv.iloc[-1]) and not pd.isna(obv.iloc[-5]):
+            results["obv_change_5d"] = int(obv.iloc[-1] - obv.iloc[-5])
+        else:
+            results["obv_change_5d"] = None
 
         # ROC
         roc = calc_roc(close, period=12)
@@ -377,7 +380,10 @@ def compute_all_indicators(data: dict) -> dict:
         # Volume analysis
         avg_vol_20 = df_short["Volume"].rolling(20).mean().iloc[-1] if len(df_short) >= 20 else df_short["Volume"].mean()
         current_vol = df_short["Volume"].iloc[-1]
-        results["volume_ratio"] = round(current_vol / avg_vol_20, 2) if avg_vol_20 > 0 else None
+        if not pd.isna(avg_vol_20) and not pd.isna(current_vol) and avg_vol_20 > 0:
+            results["volume_ratio"] = round(current_vol / avg_vol_20, 2)
+        else:
+            results["volume_ratio"] = None
 
         # Price changes
         results["change_1d"] = round((close.iloc[-1] - close.iloc[-2]) / close.iloc[-2] * 100, 2) if len(close) >= 2 else None

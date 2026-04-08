@@ -5,6 +5,17 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 
+def _clean_df(df: pd.DataFrame) -> pd.DataFrame:
+    """Flatten MultiIndex columns and drop rows with missing OHLC data."""
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+    # Drop incomplete rows (e.g. today's bar before market close)
+    ohlc = [c for c in ["Open", "High", "Low", "Close"] if c in df.columns]
+    if ohlc:
+        df = df.dropna(subset=ohlc)
+    return df
+
+
 def fetch_stock_data(ticker: str) -> dict:
     """Fetch comprehensive stock data including options, insider, earnings, and market context."""
     stock = yf.Ticker(ticker)
@@ -19,17 +30,17 @@ def fetch_stock_data(ticker: str) -> dict:
 
     # ── Price Data ──
     try:
-        intraday = stock.history(period="5d", interval="15m")
+        intraday = _clean_df(stock.history(period="5d", interval="15m"))
     except Exception:
         intraday = pd.DataFrame()
 
     try:
-        daily_short = stock.history(period="1mo", interval="1d")
+        daily_short = _clean_df(stock.history(period="1mo", interval="1d"))
     except Exception:
         daily_short = pd.DataFrame()
 
     try:
-        daily_long = stock.history(period="6mo", interval="1d")
+        daily_long = _clean_df(stock.history(period="6mo", interval="1d"))
     except Exception:
         daily_long = pd.DataFrame()
 
@@ -103,7 +114,7 @@ def fetch_stock_data(ticker: str) -> dict:
 
     try:
         spy = yf.Ticker("SPY")
-        spy_hist = spy.history(period="5d", interval="1d")
+        spy_hist = _clean_df(spy.history(period="5d", interval="1d"))
         if len(spy_hist) >= 2:
             spy_change_1d = round(
                 (spy_hist["Close"].iloc[-1] - spy_hist["Close"].iloc[-2]) / spy_hist["Close"].iloc[-2] * 100, 2

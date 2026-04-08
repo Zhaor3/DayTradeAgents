@@ -87,7 +87,22 @@ def generate_chart(data: dict, indicators: dict, decision_text: str) -> str:
 
     # ── Prediction Cone ──
     atr = indicators.get("atr_14")
-    if atr and atr > 0:
+    # Ensure ATR is a valid positive number (NaN is truthy but fails comparisons)
+    try:
+        atr = float(atr) if atr is not None and not pd.isna(atr) and float(atr) > 0 else None
+    except (TypeError, ValueError):
+        atr = None
+    # Fallback: compute ATR directly from chart data
+    if atr is None and len(df) >= 14:
+        high_low = df["High"] - df["Low"]
+        high_close = (df["High"] - df["Close"].shift()).abs()
+        low_close = (df["Low"] - df["Close"].shift()).abs()
+        tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+        atr_series = tr.rolling(14).mean()
+        atr_val = atr_series.iloc[-1]
+        if not pd.isna(atr_val) and float(atr_val) > 0:
+            atr = round(float(atr_val), 2)
+    if atr is not None and atr > 0:
         last_date = df.index[-1]
         last_price = close.iloc[-1]
 
