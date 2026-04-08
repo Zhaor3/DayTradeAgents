@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# TradingAgentV2 - Ubuntu Setup Script
+# DayTradeAgents - Ubuntu Setup Script
 # ============================================================================
 # Run this on your Ubuntu server:
 #   chmod +x setup_ubuntu.sh && ./setup_ubuntu.sh
@@ -9,7 +9,7 @@
 set -e
 
 echo "========================================="
-echo " TradingAgentV2 - Ubuntu Setup"
+echo " DayTradeAgents - Ubuntu Setup"
 echo "========================================="
 
 # ── 1. System packages ──
@@ -20,13 +20,13 @@ sudo apt update && sudo apt install -y python3 python3-pip python3-venv git curl
 # ── 2. Project directory ──
 echo ""
 echo "[2/6] Setting up project directory..."
-PROJECT_DIR="$HOME/TradingAgentV2"
+PROJECT_DIR="$HOME/DayTradeAgents"
 
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "Creating $PROJECT_DIR..."
     mkdir -p "$PROJECT_DIR"
     echo "Copy your project files to $PROJECT_DIR first, then re-run this script."
-    echo "Example: scp -r ./TradingAgentV2/* user@server:~/TradingAgentV2/"
+    echo "Example: scp -r ./DayTradeAgents/* user@server:~/DayTradeAgents/"
     exit 1
 fi
 
@@ -61,13 +61,13 @@ fi
 # ── 5. Systemd service ──
 echo ""
 echo "[5/6] Installing systemd service..."
-SERVICE_FILE="/etc/systemd/system/tradingagentv2.service"
+SERVICE_FILE="/etc/systemd/system/daytradeagents.service"
 PYTHON_PATH="$PROJECT_DIR/venv/bin/python"
 USER=$(whoami)
 
 sudo bash -c "cat > $SERVICE_FILE" <<EOF
 [Unit]
-Description=TradingAgentV2 Telegram Bot
+Description=DayTradeAgents Telegram Bot
 After=network.target
 
 [Service]
@@ -86,7 +86,7 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable tradingagentv2
+sudo systemctl enable daytradeagents
 
 # ── 6. Done ──
 echo ""
@@ -104,10 +104,10 @@ echo "      source venv/bin/activate"
 echo "      python telegram_bot.py"
 echo ""
 echo "   3. Once working, start as a service:"
-echo "      sudo systemctl start tradingagentv2"
+echo "      sudo systemctl start daytradeagents"
 echo ""
 echo "   4. Check status:"
-echo "      sudo systemctl status tradingagentv2"
+echo "      sudo systemctl status daytradeagents"
 echo ""
 echo "   5. View logs:"
 echo "      tail -f $PROJECT_DIR/bot.log"

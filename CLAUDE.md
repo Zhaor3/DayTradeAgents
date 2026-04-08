@@ -1,4 +1,4 @@
-# TradingAgentV2
+# DayTradeAgents
 
 AI-powered day trading assistant that runs as a Telegram bot on Ubuntu.
 
@@ -18,7 +18,7 @@ Output includes:
 ## Project Structure
 
 ```
-TradingAgentV2/
+DayTradeAgents/
 ├── main.py                  # Local interactive CLI
 ├── telegram_bot.py          # Telegram bot (runs on Ubuntu server)
 ├── config.py                # Settings from .env
@@ -57,9 +57,9 @@ python main.py
 python telegram_bot.py
 
 # Ubuntu service
-sudo systemctl start tradingagentv2
-sudo systemctl status tradingagentv2
-tail -f ~/TradingAgentV2/bot.log
+sudo systemctl start daytradeagents
+sudo systemctl status daytradeagents
+tail -f ~/DayTradeAgents/bot.log
 ```
 
 ## Telegram Bot Commands
