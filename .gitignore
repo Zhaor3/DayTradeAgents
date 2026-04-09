@@ -4,3 +4,6 @@ __pycache__/
 venv/
 bot.log
 .claude/
+tests/fixtures/
+*.pkl
+.pytest_cache/

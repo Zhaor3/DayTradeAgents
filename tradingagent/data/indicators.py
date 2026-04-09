@@ -187,51 +187,27 @@ def _cluster_levels(levels, threshold=0.01):
 
 def calc_signal_alignment(indicators: dict) -> dict:
     """Calculate a composite signal alignment score from -100 (bearish) to +100 (bullish).
-    Also returns individual signal breakdowns."""
+
+    Uses trend-following approach: MACD momentum and EMA trend direction are weighted
+    heavily, while RSI/Stochastic contrarian signals are kept light. In strong trends,
+    overbought/oversold indicators can stay extreme for weeks - fighting them loses money.
+    """
     signals = []
     breakdown = {}
 
-    # RSI
-    rsi = indicators.get("rsi_14")
-    if rsi is not None:
-        if rsi < 30:
-            signals.append(("RSI oversold", +2))
-            breakdown["RSI"] = "Oversold (bullish)"
-        elif rsi < 40:
-            signals.append(("RSI low", +1))
-            breakdown["RSI"] = "Low (slightly bullish)"
-        elif rsi > 70:
-            signals.append(("RSI overbought", -2))
-            breakdown["RSI"] = "Overbought (bearish)"
-        elif rsi > 60:
-            signals.append(("RSI high", -1))
-            breakdown["RSI"] = "High (slightly bearish)"
-        else:
-            signals.append(("RSI neutral", 0))
-            breakdown["RSI"] = "Neutral"
+    # ── Trend-following signals (heavy weight) ──
 
-    # MACD
+    # MACD histogram: primary momentum signal
     hist = indicators.get("macd_histogram")
     if hist is not None:
         if hist > 0:
-            signals.append(("MACD bullish", +2))
-            breakdown["MACD"] = "Bullish"
+            signals.append(("MACD bullish", +3))
+            breakdown["MACD"] = "Bullish momentum"
         else:
-            signals.append(("MACD bearish", -2))
-            breakdown["MACD"] = "Bearish"
+            signals.append(("MACD bearish", -3))
+            breakdown["MACD"] = "Bearish momentum"
 
-    # Price vs VWAP
-    vwap = indicators.get("vwap")
-    price = indicators.get("_current_price", 0)
-    if vwap and price:
-        if price > vwap:
-            signals.append(("Above VWAP", +1))
-            breakdown["VWAP"] = "Above (bullish)"
-        else:
-            signals.append(("Below VWAP", -1))
-            breakdown["VWAP"] = "Below (bearish)"
-
-    # EMA cross
+    # EMA cross: short-term trend direction
     ema_cross = indicators.get("ema_cross")
     if ema_cross == "golden_cross":
         signals.append(("EMA golden cross", +3))
@@ -240,26 +216,70 @@ def calc_signal_alignment(indicators: dict) -> dict:
         signals.append(("EMA death cross", -3))
         breakdown["EMA Cross"] = "Death cross (strong bearish)"
     elif ema_cross == "bullish":
-        signals.append(("EMA bullish", +1))
+        signals.append(("EMA bullish", +2))
         breakdown["EMA Cross"] = "Bullish alignment"
     elif ema_cross == "bearish":
-        signals.append(("EMA bearish", -1))
+        signals.append(("EMA bearish", -2))
         breakdown["EMA Cross"] = "Bearish alignment"
 
-    # Stochastic
+    # Price vs key moving averages: trend context
+    price = indicators.get("_current_price", 0)
+    sma_20 = indicators.get("sma_20")
+    sma_50 = indicators.get("sma_50")
+    if price and sma_20:
+        if price > sma_20:
+            signals.append(("Above SMA20", +1))
+            breakdown["SMA 20"] = "Price above (bullish)"
+        else:
+            signals.append(("Below SMA20", -1))
+            breakdown["SMA 20"] = "Price below (bearish)"
+    if price and sma_50:
+        if price > sma_50:
+            signals.append(("Above SMA50", +1))
+            breakdown["SMA 50"] = "Price above (bullish)"
+        else:
+            signals.append(("Below SMA50", -1))
+            breakdown["SMA 50"] = "Price below (bearish)"
+
+    # Price vs VWAP
+    vwap = indicators.get("vwap")
+    if vwap and price:
+        if price > vwap:
+            signals.append(("Above VWAP", +1))
+            breakdown["VWAP"] = "Above (bullish)"
+        else:
+            signals.append(("Below VWAP", -1))
+            breakdown["VWAP"] = "Below (bearish)"
+
+    # ── Contrarian signals (lighter weight) ──
+
+    # RSI: only extreme levels matter, and weight is reduced
+    rsi = indicators.get("rsi_14")
+    if rsi is not None:
+        if rsi < 30:
+            signals.append(("RSI oversold", +1))
+            breakdown["RSI"] = f"Oversold ({rsi:.0f}) - potential bounce"
+        elif rsi > 70:
+            signals.append(("RSI overbought", -1))
+            breakdown["RSI"] = f"Overbought ({rsi:.0f}) - stretched"
+        else:
+            breakdown["RSI"] = f"Neutral ({rsi:.0f})"
+
+    # Stochastic: light contrarian weight
     stoch_k = indicators.get("stochastic_k")
     if stoch_k is not None:
         if stoch_k < 20:
-            signals.append(("Stoch oversold", +2))
-            breakdown["Stochastic"] = "Oversold (bullish)"
+            signals.append(("Stoch oversold", +1))
+            breakdown["Stochastic"] = "Oversold (potential bounce)"
         elif stoch_k > 80:
-            signals.append(("Stoch overbought", -2))
-            breakdown["Stochastic"] = "Overbought (bearish)"
+            signals.append(("Stoch overbought", -1))
+            breakdown["Stochastic"] = "Overbought (stretched)"
         else:
-            signals.append(("Stoch neutral", 0))
             breakdown["Stochastic"] = "Neutral"
 
-    # ADX (trend strength, not direction)
+    # ── Confirming signals ──
+
+    # ADX: trend strength (amplifies direction)
     adx = indicators.get("adx")
     if adx is not None:
         if adx > 25:
@@ -279,14 +299,14 @@ def calc_signal_alignment(indicators: dict) -> dict:
         else:
             breakdown["Volume"] = "Normal"
 
-    # RSI divergence
+    # RSI divergence (still valuable as a reversal signal)
     div = indicators.get("rsi_divergence")
     if div == "bullish":
-        signals.append(("Bullish RSI divergence", +3))
-        breakdown["RSI Divergence"] = "Bullish (strong reversal signal)"
+        signals.append(("Bullish RSI divergence", +2))
+        breakdown["RSI Divergence"] = "Bullish (reversal signal)"
     elif div == "bearish":
-        signals.append(("Bearish RSI divergence", -3))
-        breakdown["RSI Divergence"] = "Bearish (strong reversal signal)"
+        signals.append(("Bearish RSI divergence", -2))
+        breakdown["RSI Divergence"] = "Bearish (reversal signal)"
 
     # Calculate composite score
     if not signals:

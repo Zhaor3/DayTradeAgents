@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DayTradeAgents Telegram Bot
+TradingAgentV2 Telegram Bot
 ----------------------------
 AI-powered day trading assistant on Telegram.
 
@@ -16,7 +16,7 @@ Setup:
   3. python telegram_bot.py
 
 Run as service:
-  sudo systemctl start daytradeagents
+  sudo systemctl start tradingagentv2
 """
 
 import os
@@ -96,7 +96,7 @@ def send_photo(chat_id: int, photo_path: str, caption: str = "") -> None:
 
 
 def run_bot_analysis(ticker: str, shares: int, avg_price: float, chat_id: int) -> str:
-    """Run the DayTradeAgents analysis pipeline and return formatted report."""
+    """Run the TradingAgentV2 analysis pipeline and return formatted report."""
 
     holdings_str = f"holding {shares} shares at ${avg_price:.2f}" if shares > 0 else "no position"
     send_msg(chat_id,
@@ -357,14 +357,14 @@ def flush_old_messages() -> int:
 
 
 def main():
-    print("[INFO] DayTradeAgents Telegram Bot started.")
+    print("[INFO] TradingAgentV2 Telegram Bot started.")
     print(f"[INFO] Listening for chat ID {ALLOWED_CHAT_ID}...")
 
     offset = flush_old_messages()
     print(f"[INFO] Flushed old messages. Starting from offset {offset}")
 
     send_msg(ALLOWED_CHAT_ID,
-        "DayTradeAgents Bot is online!\n\n"
+        "TradingAgentV2 Bot is online!\n\n"
         "Commands:\n"
         "  ta NVDA - analyze (no position)\n"
         "  ta NVDA 50 120.5 - analyze holding 50 shares at $120.50\n"
@@ -388,7 +388,7 @@ def main():
             # Help
             if text.lower() in ("/start", "/help"):
                 send_msg(chat_id,
-                    "DayTradeAgents - Day Trading Assistant\n\n"
+                    "TradingAgentV2 - Day Trading Assistant\n\n"
                     "Commands:\n"
                     "  ta NVDA - analyze stock (no position)\n"
                     "  ta NVDA 50 120.5 - analyze while holding 50 shares at $120.50 avg\n"
