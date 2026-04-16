@@ -1,239 +1,140 @@
-<div align="center">
+<p align="center">
+  <img src="assets/banner.png" alt="TradingAgentV2 Banner" width="100%">
+</p>
 
-# DayTradeAgents
+<p align="center">
+  <strong>11 AI agents debate your trades before you enter them.</strong>
+</p>
 
-### Multi-Agent LLM Day Trading Framework
+<p align="center">
+  <a href="#quick-start"><img src="https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white" alt="Python 3.10+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
+  <a href="https://core.telegram.org/bots/api"><img src="https://img.shields.io/badge/Telegram-Bot%20API-229ED9?logo=telegram&logoColor=white" alt="Telegram Bot API"></a>
+  <a href="https://openai.com"><img src="https://img.shields.io/badge/OpenAI-compatible-412991?logo=openai&logoColor=white" alt="OpenAI"></a>
+  <a href="https://anthropic.com"><img src="https://img.shields.io/badge/Anthropic-compatible-d4a574?logo=anthropic&logoColor=white" alt="Anthropic"></a>
+  <a href="https://github.com/ranaroussi/yfinance"><img src="https://img.shields.io/badge/data-yfinance-orange" alt="yfinance"></a>
+</p>
 
-*11 AI agents that debate, challenge, and stress-test every trade before you take it.*
-
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/downloads/)
-[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--5-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
-[![Anthropic](https://img.shields.io/badge/Anthropic-Claude-D4A574?style=for-the-badge&logo=anthropic&logoColor=white)](https://anthropic.com/)
-[![Telegram](https://img.shields.io/badge/Telegram-Bot-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://core.telegram.org/bots)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="#how-it-works">How It Works</a> &nbsp;&bull;&nbsp;
+  <a href="#quick-start">Quick Start</a> &nbsp;&bull;&nbsp;
+  <a href="#telegram-demo">Demo</a> &nbsp;&bull;&nbsp;
+  <a href="#technical-indicators">Indicators</a> &nbsp;&bull;&nbsp;
+  <a href="#deploy-to-ubuntu">Deploy</a> &nbsp;&bull;&nbsp;
+  <a href="#credits">Credits</a>
+</p>
 
 ---
 
-**11 Agents** &nbsp;|&nbsp; **Multi-Round Debates** &nbsp;|&nbsp; **15+ Indicators** &nbsp;|&nbsp; **Price Prediction Charts** &nbsp;|&nbsp; **Telegram Delivery**
+## Why TradingAgentV2?
 
-Built on ideas from **[TradingAgents](https://github.com/TauricResearch/TradingAgents)** by Tauric Research
+Most trading bots give you a signal and expect you to trust it blindly. TradingAgentV2 doesn't work that way.
 
-</div>
+It runs **11 specialized AI agents** through a structured debate &mdash; bull researchers argue against bear researchers, aggressive risk analysts challenge conservative ones, and a portfolio manager synthesizes the entire battle into a single, actionable trade plan with **specific entry, target, and stop-loss prices**.
 
-<br/>
+The whole thing is delivered to your phone via **Telegram** in under 7 minutes. Chart included.
+
+```
+You:   ta NVDA 50 120.50
+Bot:   BUY | Confidence: High | Entry: $112.50 | Target: $118.00 | Stop: $109.00
+```
+
+<br>
+
+## Telegram Demo
+
+<p align="center">
+  <img src="assets/telegram_demo.png" alt="Telegram Bot Demo" width="420">
+</p>
+
+<details>
+<summary><strong>See the prediction chart in detail</strong></summary>
+<br>
+<p align="center">
+  <img src="assets/chart_preview.png" alt="Price Prediction Chart" width="800">
+</p>
+
+The chart includes candlesticks, EMA 9, SMA 20, Bollinger Bands, VWAP, support/resistance levels, Fibonacci retracements, volume analysis, and an **ATR-based prediction cone** color-coded by the agent's decision.
+</details>
+
+<br>
 
 ## How It Works
 
-DayTradeAgents mirrors how professional trading firms operate. Instead of one AI giving a signal, **11 specialized agents** analyze, debate, stress-test, and synthesize a final decision through a structured 6-phase pipeline.
+### The 6-Phase Pipeline
 
-Send `ta NVDA` to your Telegram bot and get back a **price prediction chart** and a **full trade dashboard** in ~3-5 minutes.
-
-<br/>
+Every analysis runs **11 agents** through **6 phases** with ~15 LLM calls:
 
 ```mermaid
-flowchart TB
-    subgraph phase0["Phase 0 &mdash; Data Collection"]
-        DATA["Market Data\nPrice + Options + VIX + Insider + Earnings"]
-        IND["Indicator Engine\n15+ Technical Signals\nSignal Alignment Score"]
-        DATA --> IND
-    end
+graph TD
+    A["<b>Phase 0: Data Collection</b><br/>Yahoo Finance + 15 Indicators"] --> B["<b>Phase 1: Analyst Team</b><br/>Technical + News + Fundamentals"]
+    B --> C["<b>Phase 2: Research Debate</b><br/>Bull vs Bear (2 rounds)<br/>Research Manager judges"]
+    C --> D["<b>Phase 3: Trade Proposal</b><br/>Concrete entry/target/stop"]
+    D --> E["<b>Phase 4: Risk Stress-Test</b><br/>Aggressive vs Conservative<br/>Neutral mediates"]
+    E --> F["<b>Phase 5: Final Decision</b><br/>Portfolio Manager synthesizes<br/>BUY / OVERWEIGHT / HOLD /<br/>UNDERWEIGHT / SELL"]
+    F --> G["<b>Phase 6: Output</b><br/>Chart + Report → Telegram"]
 
-    subgraph phase1["Phase 1 &mdash; Analyst Team"]
-        direction LR
-        TA["Technical\nAnalyst\n(deep model)"]
-        NA["News\nAnalyst\n(quick model)"]
-        FA["Fundamentals\nAnalyst\n(quick model)"]
-    end
-
-    subgraph phase2["Phase 2 &mdash; Research Debate"]
-        BULL["Bull\nResearcher"]
-        BEAR["Bear\nResearcher"]
-        BULL -- "Round 1: Cases" --> BEAR
-        BEAR -- "Round 2: Rebuttals" --> BULL
-        BULL --> RM["Research\nManager"]
-        BEAR --> RM
-    end
-
-    subgraph phase3["Phase 3 &mdash; Trade Proposal"]
-        TRADER["Trader\nEntry / Target / Stop / Size"]
-    end
-
-    subgraph phase4["Phase 4 &mdash; Risk Stress-Test"]
-        direction LR
-        AGG["Aggressive\n&quot;Take it&quot;"]
-        CON["Conservative\n&quot;Too risky&quot;"]
-        NEU["Neutral\n&quot;Balance&quot;"]
-    end
-
-    subgraph phase5["Phase 5 &mdash; Final Decision"]
-        PM["Portfolio Manager\nBUY / OVERWEIGHT / HOLD\nUNDERWEIGHT / SELL"]
-    end
-
-    subgraph output["Output"]
-        direction LR
-        CHART["Price Prediction\nChart"]
-        REPORT["Trade\nDashboard"]
-        TG["Telegram"]
-        CHART --> TG
-        REPORT --> TG
-    end
-
-    phase0 --> phase1
-    phase1 --> phase2
-    phase2 --> phase3
-    phase3 --> phase4
-    phase4 --> phase5
-    phase5 --> output
-
-    style phase0 fill:#1a1a2e,stroke:#16213e,color:#e0e0e0
-    style phase1 fill:#16213e,stroke:#0f3460,color:#e0e0e0
-    style phase2 fill:#0f3460,stroke:#533483,color:#e0e0e0
-    style phase3 fill:#533483,stroke:#e94560,color:#e0e0e0
-    style phase4 fill:#e94560,stroke:#e94560,color:#ffffff
-    style phase5 fill:#0f9b58,stroke:#0f9b58,color:#ffffff
-    style output fill:#2d2d2d,stroke:#555,color:#e0e0e0
+    style A fill:#1a1a2e,stroke:#6366f1,color:#fff
+    style B fill:#1a1a2e,stroke:#00BCD4,color:#fff
+    style C fill:#1a1a2e,stroke:#FF9800,color:#fff
+    style D fill:#1a1a2e,stroke:#8b5cf6,color:#fff
+    style E fill:#1a1a2e,stroke:#FF1744,color:#fff
+    style F fill:#1a1a2e,stroke:#00C853,color:#fff
+    style G fill:#1a1a2e,stroke:#E040FB,color:#fff
 ```
 
-<br/>
+<details>
+<summary><strong>Agent details (click to expand)</strong></summary>
 
----
+| # | Agent | Model Tier | Role |
+|---|-------|-----------|------|
+| 1 | Technical Analyst | Deep | Chart patterns, momentum, key levels |
+| 2 | News Analyst | Quick | Headline sentiment, catalysts |
+| 3 | Fundamentals Analyst | Quick | Valuation, financial health |
+| 4 | Bull Researcher | Deep | Opening bull case + rebuttal |
+| 5 | Bear Researcher | Deep | Opening bear case + counter |
+| 6 | Research Manager | Deep | Judges full debate transcript |
+| 7 | Trader | Quick | Converts verdict to trade proposal |
+| 8 | Aggressive Risk Analyst | Quick | Champions the opportunity |
+| 9 | Conservative Risk Analyst | Quick | Highlights hidden dangers |
+| 10 | Neutral Risk Analyst | Quick | Finds balanced middle ground |
+| 11 | Portfolio Manager | Deep | Final BUY/SELL/HOLD + strategy |
 
-## Key Features
+</details>
 
-### Multi-Agent Debate Architecture
+### What You Get Back
 
-11 specialized agents collaborate through structured debates. Bull and bear researchers argue in **multiple rounds with direct rebuttals** — not just presenting sides, but attacking each other's specific points. A research manager reads the full transcript and identifies which arguments survived.
+Every analysis produces:
 
-### 3-Way Risk Stress-Test
+| Output | Details |
+|--------|---------|
+| **Decision** | BUY / OVERWEIGHT / HOLD / UNDERWEIGHT / SELL with confidence level |
+| **Short-term play** | 1-5 day strategy with entry, target, stop-loss, risk/reward ratio |
+| **Long-term play** | 1-4 week strategy with entry, target, stop-loss |
+| **Key levels** | Support, resistance, VWAP |
+| **Risk assessment** | Risk level, position sizing, max loss, exit rules |
+| **News impact** | Sentiment summary with key catalysts |
+| **Prediction chart** | Candlestick chart with indicators + ATR forecast cone |
 
-Every trade proposal faces a **risk committee of three personas**:
-
-| Persona | Role | Argues For |
-|---------|------|------------|
-| **Aggressive** | Risk-taker | Upside justifies the risk — size up, act now |
-| **Conservative** | Capital protector | Hidden risks — size down, wait for confirmation |
-| **Neutral** | Mediator | Where each side is right and wrong |
-
-### Signal Alignment Score
-
-A composite score from **-100 to +100** computed from all indicators *before* agents begin analysis. This objective anchor reduces the LLM's tendency to cherry-pick signals that confirm the first narrative it encounters.
-
-### 15+ Technical Indicators (All Local)
-
-All computed from free Yahoo Finance data — no paid APIs needed:
-
-| Category | Indicators |
-|----------|-----------|
-| **Momentum** | RSI (14), Stochastic %K/%D, ROC (12) |
-| **Trend** | MACD, EMA 9/21 Cross, ADX (14) |
-| **Volatility** | Bollinger Bands, ATR (14) |
-| **Volume** | OBV, VWAP |
-| **Levels** | Fibonacci Retracement, Support/Resistance |
-| **Reversal** | RSI Divergence Detection |
-| **Composite** | Signal Alignment Score (-100 to +100) |
-
-### Price Prediction Chart
-
-Candlestick chart with **indicator overlays and an ATR-based forecast cone**:
-- EMA/SMA + Bollinger Bands + VWAP overlay
-- Support/resistance zones and Fibonacci levels
-- Prediction cone showing probable price range
-- Decision badge with the final rating
-- Sent as an image directly to Telegram
-
-### Position-Aware Analysis
-
-Tell the bot your current holdings and it factors in your P&L:
-
-```
-ta NVDA              → Analyze with no position
-ta NVDA 50 120.5     → Holding 50 shares at $120.50 avg
-```
-
-Holding at a loss? It considers whether to cut or hold. Sitting on gains? It recommends trailing stops.
-
-### Two-Tier LLM Cost Optimization
-
-| Tier | Default Model | Used By |
-|------|--------------|---------|
-| **Deep** | `gpt-5.2` | Technical analyst, bull/bear debate, research manager, portfolio manager |
-| **Quick** | `gpt-5-mini` | News, fundamentals, trader, risk debate, formatting |
-
-Supports both **OpenAI** and **Anthropic** — just change `LLM_PROVIDER` in `.env`.
-
----
-
-## Pipeline Detail
-
-### Phase 0: Data Collection
-
-| Source | Data | Purpose |
-|--------|------|---------|
-| Yahoo Finance | OHLCV (intraday + daily) | Price action and charting |
-| Yahoo Finance | Options chain | Put/call ratio (sentiment) |
-| Yahoo Finance | Insider transactions | Smart money flow |
-| Yahoo Finance | Earnings calendar | Upcoming event risk |
-| Yahoo Finance | Company info | P/E, market cap, sector |
-| `^VIX` | Volatility index | Market fear gauge |
-| `SPY` | S&P 500 1-day change | Broad market context |
-
-### Phase 1: Analyst Team (3 Agents, Parallel)
-
-| Agent | Model | Focus |
-|-------|-------|-------|
-| **Technical Analyst** | Deep | RSI, MACD, Bollinger, ATR, Stochastic, ADX, OBV, Fibonacci, VWAP, support/resistance, EMA crossovers, RSI divergence |
-| **News Analyst** | Quick | Recent headlines, sentiment assessment, catalyst and risk identification |
-| **Fundamentals Analyst** | Quick | P/E valuation, market cap, financial health, growth vs value |
-
-### Phase 2: Research Debate (5 Steps)
-
-| Step | Agent | Action |
-|------|-------|--------|
-| 1 | **Bull Researcher** | Presents the strongest buy case |
-| 2 | **Bear Researcher** | Presents the strongest sell case |
-| 3 | **Bull Rebuttal** | Directly addresses bear's specific points |
-| 4 | **Bear Counter** | Directly addresses bull's rebuttal |
-| 5 | **Research Manager** | Reads full transcript, identifies surviving arguments, delivers verdict |
-
-### Phase 3: Trade Proposal
-
-The **Trader** agent converts the research verdict into a concrete plan: entry price, target, stop-loss, position size, and timeframe. Uses ATR for volatility-adjusted stop placement.
-
-### Phase 4: Risk Stress-Test (3-Way Debate)
-
-Three risk personas debate the trade proposal. The aggressive advocate champions the opportunity, the conservative advocate highlights hidden dangers, and the neutral mediator synthesizes a balanced view.
-
-### Phase 5: Portfolio Manager (Final Decision)
-
-Synthesizes all 10 prior agents into a **5-level rating**:
-
-```
-BUY ──── OVERWEIGHT ──── HOLD ──── UNDERWEIGHT ──── SELL
-```
-
-Delivers two timeframe strategies with specific entry, target, stop-loss, risk/reward ratio, and position sizing:
-- **Short-term**: 1-5 day swing trade
-- **Long-term**: 1-4 week position trade
-
----
+<br>
 
 ## Quick Start
 
 ### Prerequisites
 
 - Python 3.10+
-- OpenAI or Anthropic API key
-- Telegram bot token (from [@BotFather](https://t.me/BotFather))
+- An [OpenAI](https://platform.openai.com/api-keys) or [Anthropic](https://console.anthropic.com/) API key
+- A Telegram bot token (from [@BotFather](https://t.me/BotFather))
 
-### 1. Clone & Configure
+### 1. Clone & configure
 
 ```bash
-git clone https://github.com/Zhaor3/DayTradeAgents.git
-cd DayTradeAgents
+git clone https://github.com/YOUR_USERNAME/TradingAgentV2.git
+cd TradingAgentV2
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edit `.env` with your keys:
 
 ```env
 LLM_PROVIDER=openai
@@ -247,175 +148,179 @@ TELEGRAM_CHAT_ID=your-chat-id
 
 > **Tip:** Get your chat ID by messaging [@userinfobot](https://t.me/userinfobot) on Telegram.
 
-### 2. Install & Run
+### 2. Install & run
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python telegram_bot.py
 ```
 
-### 3. Use on Telegram
+### 3. Start trading
+
+Open Telegram and send:
 
 ```
-ta NVDA              → Analyze (no position)
+ta NVDA              → Analyze with no position
 ta NVDA 50 120.5     → Analyze holding 50 shares at $120.50 avg
 /status              → Check bot is alive
 /help                → Show commands
 ```
 
----
+<br>
 
-## Ubuntu Server Deploy
+## Technical Indicators
 
-One-command setup with systemd auto-restart:
+All computed locally from yfinance data &mdash; no paid API needed:
 
-```bash
-git clone https://github.com/Zhaor3/DayTradeAgents.git ~/DayTradeAgents
-cd ~/DayTradeAgents
-chmod +x setup_ubuntu.sh && ./setup_ubuntu.sh
-```
+| Category | Indicators |
+|----------|-----------|
+| **Trend** | MACD (12/26/9), EMA 9/21 Cross, SMA 10/20/50/200 |
+| **Momentum** | RSI (14), Stochastic %K/%D, ROC (12), OBV |
+| **Volatility** | ATR (14), Bollinger Bands (20, 2&sigma;) |
+| **Levels** | Support/Resistance, Fibonacci (38.2%, 50%, 61.8%), VWAP |
+| **Strength** | ADX (14), Volume Ratio, RSI Divergence |
+| **Composite** | **Signal Alignment Score** (-100 to +100) |
 
-Then:
+The **Signal Alignment Score** is a weighted composite that runs before any LLM call, providing an objective baseline that reduces narrative bias from language models.
 
-```bash
-nano ~/DayTradeAgents/.env              # Add your API keys
-sudo systemctl start daytradeagents     # Start the bot
-sudo systemctl status daytradeagents    # Check status
-tail -f ~/DayTradeAgents/bot.log        # Live logs
-```
+<br>
 
-The bot auto-restarts on crash and starts on boot.
+## LLM Configuration
 
----
+Two model tiers keep costs reasonable while maintaining quality:
 
-## Comparison with TradingAgents
+| Tier | Default (OpenAI) | Default (Anthropic) | Used By |
+|------|------------------|--------------------:|---------|
+| **Deep** | `gpt-5.2` | `claude-sonnet-4-20250514` | Technical, Research Debate, Risk Advisor, Portfolio Manager |
+| **Quick** | `gpt-5-mini` | `claude-sonnet-4-20250514` | News, Fundamentals, Trader, Risk Debate, Report Formatting |
 
-| | TradingAgents (Original) | DayTradeAgents |
-|---|---|---|
-| **Focus** | General investment analysis | Day trading (1-5 day + 1-4 week) |
-| **Delivery** | CLI / LangGraph | Telegram bot + CLI |
-| **Framework** | LangGraph + Redis + LangChain | Lightweight (direct API calls) |
-| **Dependencies** | 20+ packages | 8 packages |
-| **Setup** | Complex (Redis, multiple configs) | One script (`setup_ubuntu.sh`) |
-| **Position tracking** | No | Yes (`ta NVDA 50 120.5`) |
-| **Indicators** | Via external APIs | 15+ built-in (local computation) |
-| **Data sources** | Price + News | + Options + Insider + Earnings + VIX + SPY |
-| **Signal Score** | No | Composite -100 to +100 |
-| **Prediction chart** | No | Candlestick + ATR forecast cone |
-| **Rating scale** | BUY / HOLD / SELL | 5-level with OVERWEIGHT/UNDERWEIGHT |
-| **Lines of code** | ~5,000+ | ~2,200 |
+Set `LLM_PROVIDER=openai` or `LLM_PROVIDER=anthropic` in `.env` to switch.
 
----
+<br>
 
-## Testing & Accuracy
+## Deploy to Ubuntu
 
-The project includes a full test suite (36 tests) and a historical accuracy backtest.
-
-### Run Tests
+One-command setup with **systemd** for auto-start on boot:
 
 ```bash
-# All unit + integration tests (no API keys needed)
-python -m pytest tests/ -v
-
-# System validation with real market data (mock LLM)
-python tests/backtest.py AAPL
-
-# Historical accuracy backtest
-python tests/test_accuracy.py
+git clone https://github.com/YOUR_USERNAME/TradingAgentV2.git ~/TradingAgentV2
+cd ~/TradingAgentV2
+nano .env                  # Add your API keys
+chmod +x setup_ubuntu.sh
+./setup_ubuntu.sh
 ```
 
-### Historical Accuracy Results
+The script installs Python, creates a venv, installs dependencies, and registers a systemd service.
 
-The indicator engine was backtested against **8 real stock scenarios** from Jan-Feb 2024, comparing signal predictions to what actually happened 10-15 trading days later:
+```bash
+sudo systemctl start tradingagentv2      # Start
+sudo systemctl status tradingagentv2     # Check status
+tail -f ~/TradingAgentV2/bot.log         # Live logs
+sudo systemctl restart tradingagentv2    # Restart
+```
 
-| Stock | Scenario | Price Change | Predicted | Actual | Result |
-|-------|----------|-------------|-----------|--------|--------|
-| AAPL | Post-earnings (Jan 2024) | -2.6% | UP | DOWN | WRONG |
-| NVDA | AI boom surge (Feb 2024) | +20.6% | UP | UP | CORRECT |
-| MSFT | Steady climb (Mar 2024) | +0.7% | NEUTRAL | UP | NEUTRAL |
-| TSLA | Decline (Jan 2024) | -14.4% | DOWN | DOWN | CORRECT |
-| META | Post-earnings surge (Feb 2024) | +18.3% | UP | UP | CORRECT |
-| GOOGL | Choppy period (Jan 2024) | -0.8% | UP | DOWN | WRONG |
-| AMZN | Earnings rally (Feb 2024) | +7.5% | UP | UP | CORRECT |
-| AMD | AI chip demand (Feb 2024) | +5.4% | UP | UP | CORRECT |
-
-**Exact Accuracy: 62%** &nbsp;|&nbsp; **Non-Wrong Rate: 75%**
-
-> The signal alignment engine uses a **trend-following** approach: MACD momentum and EMA direction are weighted heavily, while RSI/Stochastic contrarian signals are kept light. In strong trends, overbought indicators can stay extreme for weeks — fighting them loses money. The 2 "wrong" calls (AAPL -2.6%, GOOGL -0.8%) were both tiny moves where news events overrode technicals — exactly what the LLM agents are designed to catch.
-
-### Test Suite Contents
-
-| File | Tests | What It Covers |
-|------|-------|----------------|
-| `test_indicators.py` | 27 | RSI, MACD, Bollinger, ATR, Stochastic, ADX, OBV, Fibonacci, Signal Alignment |
-| `test_pipeline.py` | 9 | Full 13-agent pipeline with mocked LLM, error handling, status callbacks |
-| `test_accuracy.py` | — | Historical backtest against 8 real stock scenarios |
-| `backtest.py` | — | Standalone system validation (mock + live modes) |
-
----
+<br>
 
 ## Project Structure
 
 ```
-DayTradeAgents/
-├── main.py                            # Interactive CLI
-├── telegram_bot.py                    # Telegram bot (production)
-├── config.py                          # Settings from .env
-├── setup_ubuntu.sh                    # One-click Ubuntu deploy
-├── requirements.txt
+TradingAgentV2/
+├── main.py                           # CLI interface
+├── telegram_bot.py                   # Telegram bot (production)
+├── config.py                         # Settings from .env
+├── setup_ubuntu.sh                   # One-click Ubuntu deployment
+├── requirements.txt                  # 8 dependencies
 │
 ├── tradingagent/
 │   ├── agents/
 │   │   ├── llm_client.py             # OpenAI / Anthropic abstraction
-│   │   ├── technical_analyst.py      # Phase 1 — Chart analysis
-│   │   ├── news_analyst.py           # Phase 1 — Sentiment
-│   │   ├── fundamentals_analyst.py   # Phase 1 — Valuation
-│   │   ├── bull_researcher.py        # Phase 2 — Buy case + rebuttal
-│   │   ├── bear_researcher.py        # Phase 2 — Sell case + counter
-│   │   ├── research_manager.py       # Phase 2 — Judges debate
-│   │   ├── trader.py                 # Phase 3 — Trade proposal
-│   │   ├── risk_aggressive.py        # Phase 4 — Opportunity
-│   │   ├── risk_conservative.py      # Phase 4 — Danger
-│   │   ├── risk_neutral.py           # Phase 4 — Balance
-│   │   ├── portfolio_manager.py      # Phase 5 — Final decision
-│   │   └── pipeline.py               # Orchestrator
-│   │
+│   │   ├── pipeline.py               # 6-phase orchestrator
+│   │   ├── technical_analyst.py      # Chart & momentum analysis
+│   │   ├── news_analyst.py           # Headline sentiment
+│   │   ├── fundamentals_analyst.py   # Valuation analysis
+│   │   ├── bull_researcher.py        # Bull case + rebuttal
+│   │   ├── bear_researcher.py        # Bear case + counter
+│   │   ├── research_manager.py       # Debate judge
+│   │   ├── trader.py                 # Trade proposal
+│   │   ├── risk_aggressive.py        # Opportunity champion
+│   │   ├── risk_conservative.py      # Danger highlighter
+│   │   ├── risk_neutral.py           # Risk mediator
+│   │   └── portfolio_manager.py      # Final decision maker
 │   ├── data/
-│   │   ├── market_data.py            # yfinance + options + insider
+│   │   ├── market_data.py            # Yahoo Finance data fetcher
 │   │   └── indicators.py             # 15+ technical indicators
-│   │
-│   └── charts/
-│       └── price_chart.py            # Prediction chart generator
-│
-├── tests/
-│   ├── conftest.py                    # Fixtures + mock LLM responses
-│   ├── test_indicators.py            # 27 indicator unit tests
-│   ├── test_pipeline.py              # 9 pipeline integration tests
-│   ├── test_accuracy.py              # Historical accuracy backtest
-│   ├── backtest.py                   # Standalone system validator
-│   └── generate_fixtures.py          # Download test data from yfinance
+│   ├── charts/
+│   │   └── price_chart.py            # Prediction chart generator
+│   └── report.py                     # Rich CLI formatter
 ```
 
----
+<br>
+
+## Compared to TradingAgents
+
+Built on the ideas from [TradingAgents by Tauric Research](https://github.com/TauricResearch/TradingAgents), re-engineered for practical day trading:
+
+| | TradingAgents | TradingAgentV2 |
+|-|--------------|---------------|
+| **Focus** | General investment | Day trading (1-5d + 1-4w) |
+| **Delivery** | CLI / LangGraph | Telegram bot + CLI |
+| **Framework** | LangGraph + Redis + LangChain | Lightweight (direct API calls) |
+| **Dependencies** | 20+ packages | 8 packages |
+| **Setup** | Complex | One script |
+| **Position tracking** | No | Yes |
+| **Local indicators** | Limited | 15+ built-in |
+| **Data sources** | Price + News | + Options, Insider, Earnings, VIX |
+| **Signal Score** | No | Composite -100 to +100 |
+| **Prediction chart** | No | Candlestick + ATR cone |
+| **Rating scale** | 3-level | 5-level |
+| **Lines of code** | ~5,000+ | ~2,200 |
+
+<br>
+
+## Roadmap
+
+- [x] Multi-agent debate pipeline (11 agents, 6 phases)
+- [x] 15+ technical indicators computed locally
+- [x] ATR-based prediction chart with forecast cone
+- [x] Telegram bot with position-aware analysis
+- [x] OpenAI + Anthropic support
+- [x] One-command Ubuntu deployment
+- [ ] Portfolio-level analysis (correlations across holdings)
+- [ ] Memory system for past trade outcomes
+- [ ] Backtesting against historical data
+- [ ] Webhook mode for faster Telegram responses
+- [ ] Multi-user support with authentication
+
+<br>
+
+## Contributing
+
+Contributions are welcome! Feel free to open an issue or submit a PR.
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/awesome-thing`)
+3. Commit your changes
+4. Push and open a PR
+
+<br>
 
 ## Credits
 
-Built on ideas from **[TradingAgents](https://github.com/TauricResearch/TradingAgents)** by [Tauric Research](https://tradingagents-ai.github.io/) — multi-agent debate architecture for financial analysis. Their work on bull/bear researcher debates, risk management committees, and portfolio manager synthesis informed the core design.
-
-Market data via [yfinance](https://github.com/ranaroussi/yfinance).
-
----
+- Inspired by [TradingAgents](https://github.com/TauricResearch/TradingAgents) by [Tauric Research](https://github.com/TauricResearch) &mdash; the multi-agent debate architecture for financial analysis
+- Market data from [Yahoo Finance](https://finance.yahoo.com/) via [yfinance](https://github.com/ranaroussi/yfinance)
 
 ## Disclaimer
 
-> This is an AI-generated analysis tool for **informational and educational purposes only**. It is **not financial advice**. Always do your own research before making trading decisions. Trading involves significant risk of loss.
+> This is an AI-generated analysis tool for **informational and educational purposes only**. It is **not financial advice**. Always do your own research before making any trading decisions. Past performance does not guarantee future results. Trading involves significant risk of loss.
+
+## License
+
+[MIT](LICENSE)
 
 ---
 
-<div align="center">
-
-**MIT License** &nbsp;|&nbsp; Made with AI
-
-</div>
+<p align="center">
+  If this project helped you, consider giving it a &#11088;
+</p>
