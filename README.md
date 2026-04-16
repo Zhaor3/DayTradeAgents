@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="TradingAgentV2 Banner" width="100%">
+  <img src="assets/banner.png" alt="DayTradeAgents Banner" width="100%">
 </p>
 
 <p align="center">
@@ -26,9 +26,9 @@
 
 ---
 
-## Why TradingAgentV2?
+## Why DayTradeAgents?
 
-Most trading bots give you a signal and expect you to trust it blindly. TradingAgentV2 doesn't work that way.
+Most trading bots give you a signal and expect you to trust it blindly. DayTradeAgents doesn't work that way.
 
 It runs **11 specialized AI agents** through a structured debate &mdash; bull researchers argue against bear researchers, aggressive risk analysts challenge conservative ones, and a portfolio manager synthesizes the entire battle into a single, actionable trade plan with **specific entry, target, and stop-loss prices**.
 
@@ -129,8 +129,8 @@ Every analysis produces:
 ### 1. Clone & configure
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/TradingAgentV2.git
-cd TradingAgentV2
+git clone https://github.com/Zhaor3/DayTradeAgents.git
+cd DayTradeAgents
 cp .env.example .env
 ```
 
@@ -205,8 +205,8 @@ Set `LLM_PROVIDER=openai` or `LLM_PROVIDER=anthropic` in `.env` to switch.
 One-command setup with **systemd** for auto-start on boot:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/TradingAgentV2.git ~/TradingAgentV2
-cd ~/TradingAgentV2
+git clone https://github.com/Zhaor3/DayTradeAgents.git ~/DayTradeAgents
+cd ~/DayTradeAgents
 nano .env                  # Add your API keys
 chmod +x setup_ubuntu.sh
 ./setup_ubuntu.sh
@@ -217,7 +217,7 @@ The script installs Python, creates a venv, installs dependencies, and registers
 ```bash
 sudo systemctl start tradingagentv2      # Start
 sudo systemctl status tradingagentv2     # Check status
-tail -f ~/TradingAgentV2/bot.log         # Live logs
+tail -f ~/DayTradeAgents/bot.log         # Live logs
 sudo systemctl restart tradingagentv2    # Restart
 ```
 
@@ -226,7 +226,7 @@ sudo systemctl restart tradingagentv2    # Restart
 ## Project Structure
 
 ```
-TradingAgentV2/
+DayTradeAgents/
 ├── main.py                           # CLI interface
 ├── telegram_bot.py                   # Telegram bot (production)
 ├── config.py                         # Settings from .env
@@ -262,7 +262,7 @@ TradingAgentV2/
 
 Built on the ideas from [TradingAgents by Tauric Research](https://github.com/TauricResearch/TradingAgents), re-engineered for practical day trading:
 
-| | TradingAgents | TradingAgentV2 |
+| | TradingAgents | DayTradeAgents |
 |-|--------------|---------------|
 | **Focus** | General investment | Day trading (1-5d + 1-4w) |
 | **Delivery** | CLI / LangGraph | Telegram bot + CLI |
