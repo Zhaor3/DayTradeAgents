@@ -23,7 +23,7 @@
   <a href="#deploy-to-ubuntu">Deploy</a> &nbsp;&bull;&nbsp;
   <a href="#credits">Credits</a>
 </p>
-
+updated by Ashlp259
 ---
 
 ## Why DayTradeAgents?
